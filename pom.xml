@@ -38,6 +38,9 @@
         <!-- deployment -->
         <github.global.server>github</github.global.server>
 
+        <!-- properties -->
+        <js.interpreter>/usr/bin/js52</js.interpreter>
+
     </properties>
 
     <distributionManagement>
@@ -170,9 +173,15 @@
                     <!--<commandlineArgs>
                         bullseye pt.up.fc.dcc.asura.builder.bullseye.BullseyeManager es6 solutions/JcpaivaBullseyePlayerES6.js zp js solutions/JcpaivaBullseyePlayer.js jcpaiva
                     </commandlineArgs>-->
-                    <!--<commandlineArgs>
+                    <commandlineArgs>
                         tictactoe pt.up.fc.dcc.asura.builder.tictactoe.TicTacToeManager es6 solutions/MyTTTPlayerES6.js jcpaiva js solutions/MyTTTPlayer.js zp
-                    </commandlineArgs>-->
+                    </commandlineArgs>
+                    <systemProperties>
+                        <systemProperty>
+                            <key>js.interpreter</key>
+                            <value>${js.interpreter}</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
             </plugin>
 

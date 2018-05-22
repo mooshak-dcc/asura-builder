@@ -1,5 +1,6 @@
 package pt.up.fc.dcc.asura.builder.languages;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,11 +27,14 @@ public class JavascriptLanguage extends Language {
         Path solutionPath = Paths.get(compileOutputPath).resolve(Paths.get(programPath).getFileName());
 
         List<String> tokens = new ArrayList<>();
-        tokens.add("/usr/bin/js");
+        tokens.add(System.getProperty("js.interpreter"));
+        tokens.add("-f");
         tokens.add(playerWrapperPath.toString());
+        tokens.add("--");
         tokens.add(solutionPath.toString());
         tokens.add(playerId);
 
-        return new ProcessBuilder(tokens);
+        return new ProcessBuilder(tokens)
+                .directory(new File(compileOutputPath));
     }
 }

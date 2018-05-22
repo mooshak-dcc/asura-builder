@@ -1,6 +1,4 @@
-var IOProcessor = require('./IOProcessor');
-
-var ioProcessor = new IOProcessor();
+load('wrappers/js/IOProcessor.js');
 
 /**
  * Wrapper for players in JavaScript.
@@ -88,7 +86,7 @@ PlayerWrapper.prototype.getPlayerId = function () {
  */
 PlayerWrapper.prototype.readAndUpdate = function () {
 
-    var state_update = JSON.parse(ioProcessor.readline());
+    var state_update = JSON.parse(IOProcessor.readln());
     this.update(state_update);
 };
 
@@ -101,7 +99,7 @@ PlayerWrapper.prototype.sendAction = function () {
 
     this.action = {'command': {}, 'messages': []};
 
-    ioProcessor.writeln(JSON.stringify(actionToSend));
+    IOProcessor.writeln(JSON.stringify(actionToSend));
 };
 
 /**
@@ -132,29 +130,24 @@ PlayerWrapper.prototype.sendName = function () {
     this.sendAction();
 };
 
-// export player wrapper
-module.exports = PlayerWrapper;
-
-
 /********************************************************************************************
  *                                       Main                                               *
  ********************************************************************************************/
 
 // parsing arguments
-if (process.argv.length !== 4) {
-    process.stderr.write('usage: {path/to/player/code} {player-id}');
-    process.stderr.write('\n');
-    process.exit(-1);
+if (scriptArgs.length !== 2) {
+    printErr('usage: {path/to/player/code} {player-id}');
+    quit(1);
 }
 
-var program_path = process.argv[2];
+var program_path = scriptArgs[0];
 
 // initialize player
-var Player = require(program_path);
+load(program_path);
 
 var player = new Player();
 
-player.setPlayerId(process.argv[3]);
+player.setPlayerId(scriptArgs[1]);
 
 // main
 player.init();

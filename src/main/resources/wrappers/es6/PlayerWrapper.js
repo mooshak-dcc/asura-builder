@@ -1,6 +1,4 @@
-const IOProcessor = require('./IOProcessor');
-
-const ioProcessor = new IOProcessor();
+load('wrappers/es6/IOProcessor.js');
 
 /**
  * Wrapper for players in JavaScript.
@@ -87,7 +85,7 @@ class PlayerWrapper {
      */
     readAndUpdate() {
 
-        let state_update = JSON.parse(ioProcessor.readline());
+        let state_update = JSON.parse(IOProcessor.readln());
         this.update(state_update);
     }
 
@@ -100,7 +98,7 @@ class PlayerWrapper {
 
         this.action = {'command': {}, 'messages': []};
 
-        ioProcessor.writeln(JSON.stringify(actionToSend));
+        IOProcessor.writeln(JSON.stringify(actionToSend));
     }
 
     /**
@@ -132,30 +130,24 @@ class PlayerWrapper {
     }
 }
 
-// export player wrapper
-module.exports = PlayerWrapper;
-
-
-
 /********************************************************************************************
  *                                       Main                                               *
  ********************************************************************************************/
 
 // parsing arguments
-if (process.argv.length !== 4) {
-    process.stderr.write('usage: {path/to/player/code} {player-id}');
-    process.stderr.write('\n');
-    process.exit(-1);
+if (scriptArgs.length !== 2) {
+    printErr('usage: {path/to/player/code} {player-id}');
+    quit(1);
 }
 
-let program_path = process.argv[2];
+let program_path = scriptArgs[0];
 
 // initialize player
-const Player = require(program_path);
+load(program_path);
 
 let player = new Player();
 
-player.setPlayerId(process.argv[3]);
+player.setPlayerId(scriptArgs[1]);
 
 // main
 player.init();
