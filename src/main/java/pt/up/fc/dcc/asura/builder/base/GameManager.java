@@ -73,12 +73,14 @@ public abstract class GameManager {
 
         movieBuilder = new GameMovieBuilderImpl();
 
-        GameState gameState = null;
+        GameState gameState;
         try {
             gameState = initializeGameState();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            LOGGER.severe(e.getMessage());
-            e.printStackTrace();
+
+            for (String playerId: players.keySet())
+                movieBuilder.addPlayer(playerId, null);
+
             movieBuilder.failedEvaluation(new BuilderException(e.getMessage()));
             return;
         }

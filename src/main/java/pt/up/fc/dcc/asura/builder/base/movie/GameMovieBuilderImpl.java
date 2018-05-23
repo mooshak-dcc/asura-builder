@@ -160,9 +160,10 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
         if (currentFrame == null)
             addFrame();
 
-        currentFrame.getStatus(player).setClassification(MooshakClassification.WRONG_ANSWER);
-        currentFrame.getStatus(player).setObservations(message);
-        currentFrame.getStatus(player).setPoints(0);
+        GamePlayerStatus playerStatus = currentFrame.getStatus(player);
+        playerStatus.setClassification(MooshakClassification.WRONG_ANSWER);
+        playerStatus.setObservations(message);
+        playerStatus.setPoints(0);
     }
 
     @Override
