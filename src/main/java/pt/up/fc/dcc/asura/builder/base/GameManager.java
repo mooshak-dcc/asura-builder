@@ -1,10 +1,14 @@
 package pt.up.fc.dcc.asura.builder.base;
 
+import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
+import pt.up.fc.dcc.asura.builder.base.exceptions.PlayerException;
 import pt.up.fc.dcc.asura.builder.base.messaging.PlayerAction;
 import pt.up.fc.dcc.asura.builder.base.messaging.StateUpdate;
 import pt.up.fc.dcc.asura.builder.base.movie.GameMovieBuilder;
+import pt.up.fc.dcc.asura.builder.base.movie.GameMovieBuilderImpl;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovie;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GamePlayerStatus;
+import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.utils.Json;
 
 import java.io.*;
@@ -62,14 +66,44 @@ public abstract class GameManager {
     /**
      * Executes a game with a list of players identified by their processes
      *
+     * @param players map of players' processes (for the same game) keyed by player
+     *                id
+     */
+    public final void manage(Map<String, Process> players) {
+
+        movieBuilder = new GameMovieBuilderImpl();
+
+        GameState gameState = null;
+        try {
+            gameState = initializeGameState();
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            LOGGER.severe(e.getMessage());
+            e.printStackTrace();
+            movieBuilder.failedEvaluation(new BuilderException(e.getMessage()));
+            return;
+        }
+
+        try {
+            manage(gameState, players);
+        } catch (PlayerException e) {
+            movieBuilder.failedEvaluation(e);
+        } catch (BuilderException e) {
+            movieBuilder.failedEvaluation(e);
+        }
+    }
+
+    /**
+     * Executes a game with a list of players identified by their processes and an
+     * initial state
+     *
      * @param state   current instance (depends on game)
      * @param players map of players' processes (for the same game) keyed by player
      *                id
-     * @throws IOException            - Any of the usual Input/Output related exceptions
-     * @throws ClassNotFoundException -
+     * @throws BuilderException - If an exception occurs related to the game manager, game state, or in the builder framework
+     * @throws PlayerException - If an exception occurs related to a player behavior
      */
-    public abstract void manage(GameState state, Map<String, Process> players)
-            throws IOException, ClassNotFoundException;
+    protected abstract void manage(GameState state, Map<String, Process> players)
+            throws BuilderException, PlayerException;
 
     /**
      * Get evaluation status of the player
@@ -139,6 +173,29 @@ public abstract class GameManager {
     }
 
     /**
+     * Instantiates a {@link GameState} from a given binary name
+     *
+     * @return instance of {@link GameState}
+     * @throws InstantiationException - Failed to get an instance of the game state
+     * @throws IllegalAccessException - Illegal access to class instance
+     * @throws ClassNotFoundException - State class was not found
+     */
+    private GameState initializeGameState()
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+        String stateClassName = getGameStateClassName();
+
+        ClassLoader loader = getClass().getClassLoader();
+        Class<?> clazz = loader.loadClass(stateClassName);
+        Object object = clazz.newInstance();
+
+        if (object instanceof GameState)
+            return (GameState) object;
+        else
+            throw new IllegalArgumentException("Not a state class: " + stateClassName);
+    }
+
+    /**
      * Aggregate of all input and output object streams keyed by process.
      * Instances of this class take care of opening and closing streams, as well
      * as sending {@code GameState} and receiving {@code PlayerAction} for each
@@ -161,30 +218,50 @@ public abstract class GameManager {
          *
          * @param player      Player to receive updates
          * @param stateUpdate {@link StateUpdate} Update of the state of the game
-         * @throws IOException - If an error occurs while writing to the player
+         * @throws PlayerException - If an error occurs while writing to the player
          *                     InputStream
          */
-        public void sendStateUpdateTo(String player, StateUpdate stateUpdate) throws IOException {
+        public void sendStateUpdateTo(String player, StateUpdate stateUpdate) throws PlayerException {
 
             if (stateUpdate == null)
                 stateUpdate = new StateUpdate(null, null);
 
             String json = Json.get().objectToString(stateUpdate);
-            outs.get(player).write(json);
-            outs.get(player).newLine();
-            outs.get(player).flush();
+
+            try {
+                outs.get(player).write(json);
+                outs.get(player).newLine();
+                outs.get(player).flush();
+            } catch (IOException e) {
+                throw new PlayerException(player, MooshakClassification.RUNTIME_ERROR,
+                        "The Game Manager could not send the update to you! Maybe your stream was closed" +
+                                " before the match ended!");
+            }
         }
 
         /**
          * Read the action from a player
          *
-         * @param player Player that is sending updates
+         * @param player ID of the player that is sending updates
          * @return {@link PlayerAction} action from a player
-         * @throws IOException - Any of the usual Input/Output related exceptions
+         * @throws PlayerException - If there is an error understanding the action
          */
-        public PlayerAction readActionFrom(String player) throws IOException {
-            String json = ins.get(player).readLine();
-            return Json.get().objectFromString(json, PlayerAction.class);
+        public PlayerAction readActionFrom(String player) throws PlayerException {
+
+            PlayerAction action;
+            try {
+                String json = ins.get(player).readLine();
+
+                action = Json.get().objectFromString(json, PlayerAction.class);
+
+                if (action == null)
+                    throw new Exception();
+            } catch (Exception e) {
+                throw new PlayerException(player, MooshakClassification.RUNTIME_ERROR,
+                        "Your action could not be parsed by the Game Manager!");
+            }
+
+            return action;
         }
 
         @Override
