@@ -30,6 +30,13 @@ public class GamePlayerStatus extends JsonObject {
         return classification;
     }
 
+    public String getClassificationLabel() {
+
+        if (classification == null)
+            return null;
+        return classification.toString();
+    }
+
     /**
      * @param classification {@link MooshakClassification}  the classification
      */

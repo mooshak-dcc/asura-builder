@@ -148,7 +148,7 @@ public abstract class PlayerWrapper {
 
             player.run();
         } else {
-            System.err.println("usage: {path/to/player/code} {player-id}");
+            System.err.println("usage: {player.qualified.ClassName} {player-id}");
         }
     }
 
