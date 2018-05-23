@@ -52,17 +52,17 @@ public class Json {
      *                             JSON String to Java Objects                             *
      ***************************************************************************************/
 
-    public <T> T objectFromString(String json, Class<T> modelClass) {
+    public <T> T objectFromString(String json, Class<T> modelClass) throws RuntimeException {
 
         return gson.fromJson(json, modelClass);
     }
 
-    public JsonElement jsonFromString(String json) {
+    public JsonElement jsonFromString(String json) throws RuntimeException {
 
         return gson.fromJson(json, JsonElement.class);
     }
 
-    public <T> Collection<T> collectionFromString(String json) {
+    public <T> Collection<T> collectionFromString(String json) throws RuntimeException {
 
         Type desiredType = new TypeToken<Collection<T>>() {
         }.getType();
@@ -75,7 +75,7 @@ public class Json {
      *                                Java Objects to JSON                                 *
      ***************************************************************************************/
 
-    public <T> JsonElement objectToJson(T object) {
+    public <T> JsonElement objectToJson(T object) throws RuntimeException {
 
         Type type = new TypeToken<T>() {
         }.getType();
@@ -83,7 +83,7 @@ public class Json {
         return gson.toJsonTree(object, type);
     }
 
-    public <T> JsonElement collectionToJson(List<T> list) {
+    public <T> JsonElement collectionToJson(List<T> list) throws RuntimeException {
 
         Type type = new TypeToken<List<T>>() {
         }.getType();
@@ -91,7 +91,7 @@ public class Json {
         return gson.toJsonTree(list, type);
     }
 
-    public <K, V> JsonElement mapToJson(Map<K, V> map) {
+    public <K, V> JsonElement mapToJson(Map<K, V> map) throws RuntimeException {
 
         Type type = new TypeToken<Map<K, V>>() {
         }.getType();
@@ -99,7 +99,7 @@ public class Json {
         return gson.toJsonTree(map, type);
     }
 
-    public <T> JsonElement arrayToJson(T[] array) {
+    public <T> JsonElement arrayToJson(T[] array) throws RuntimeException {
 
         Type type = new TypeToken<T[]>() {
         }.getType();
@@ -111,7 +111,7 @@ public class Json {
      *                             Java Objects to JSON String                             *
      ***************************************************************************************/
 
-    public <T> String objectToString(T object) {
+    public <T> String objectToString(T object) throws RuntimeException {
 
         Type type = new TypeToken<T>() {
         }.getType();
@@ -119,7 +119,7 @@ public class Json {
         return gson.toJson(object, type);
     }
 
-    public <T> String collectionToString(List<T> list) {
+    public <T> String collectionToString(List<T> list) throws RuntimeException {
 
         Type type = new TypeToken<List<T>>() {
         }.getType();
@@ -127,7 +127,7 @@ public class Json {
         return gson.toJson(list, type);
     }
 
-    public <K, V> String mapToString(Map<K, V> map) {
+    public <K, V> String mapToString(Map<K, V> map) throws RuntimeException {
 
         Type type = new TypeToken<Map<K, V>>() {
         }.getType();
@@ -135,7 +135,7 @@ public class Json {
         return gson.toJson(map, type);
     }
 
-    public <T> String arrayToString(T[] array) {
+    public <T> String arrayToString(T[] array) throws RuntimeException {
 
         Type type = new TypeToken<T[]>() {
         }.getType();
@@ -152,7 +152,8 @@ public class Json {
      *
      * @param inputStream {@link InputStream} stream to read from
      */
-    public <T> T readFromStream(InputStream inputStream, Class<T> modelClass) throws UnsupportedEncodingException {
+    public <T> T readFromStream(InputStream inputStream, Class<T> modelClass) throws RuntimeException,
+            UnsupportedEncodingException {
 
         Reader reader = new InputStreamReader(inputStream, "UTF-8");
         return gson.fromJson(reader, modelClass);
@@ -164,7 +165,8 @@ public class Json {
      * @param object       Object to write
      * @param outputStream {@link OutputStream} stream to write to
      */
-    public <T> void writeToStream(T object, OutputStream outputStream) throws IOException {
+    public <T> void writeToStream(T object, OutputStream outputStream) throws RuntimeException,
+            IOException {
 
         Type type = new TypeToken<T>() {
         }.getType();

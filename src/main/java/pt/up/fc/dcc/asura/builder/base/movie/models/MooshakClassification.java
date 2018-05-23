@@ -16,11 +16,7 @@ public enum MooshakClassification {
     INVALID_FUNCTION,
     INVALID_EXIT_VALUE,
     RUNTIME_ERROR,
-    COMPILE_TIME_ERROR,
-    INVALID_SUBMISSION,
-    PROGRAM_SIZE_EXCEEDED,
-    REQUIRES_REEVALUATION,
-    EVALUATING;
+    REQUIRES_REEVALUATION;
 
     public String toString() {
         return super.toString();

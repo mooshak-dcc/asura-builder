@@ -1,5 +1,7 @@
 package pt.up.fc.dcc.asura.builder.base.movie;
 
+import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
+import pt.up.fc.dcc.asura.builder.base.exceptions.PlayerException;
 import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovie;
 
@@ -147,6 +149,23 @@ public interface GameMovieBuilder {
      * @param message message to the player
      */
     void wrongAnswer(String player, String message);
+
+    /**
+     * Convenience method that sets the status of every player to REQUIRES_REEVALUATION
+     * when the evaluation fails due to an error not related with a specific player
+     *
+     * @param e {@link BuilderException} exception that caused the failure
+     */
+    void failedEvaluation(BuilderException e);
+
+    /**
+     * Convenience method that sets the status of a player when the evaluation fails due
+     * to an error with a specific player. The status of the erroneous player is the
+     * specified by the exception.
+     *
+     * @param e {@link PlayerException} exception that caused the failure
+     */
+    void failedEvaluation(PlayerException e);
 
     /**
      * Pushes the current frame into the stack

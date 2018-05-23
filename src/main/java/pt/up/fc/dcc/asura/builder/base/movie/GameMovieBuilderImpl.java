@@ -1,6 +1,8 @@
 package pt.up.fc.dcc.asura.builder.base.movie;
 
 import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
+import pt.up.fc.dcc.asura.builder.base.exceptions.PlayerException;
+import pt.up.fc.dcc.asura.builder.base.movie.models.GamePlayerStatus;
 import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovie;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovieFrame;
@@ -55,7 +57,6 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
     @Override
     public void addPlayer(String player, String name) {
         movie.getHeader().getPlayers().put(player, name);
-
     }
 
     @Override
@@ -70,7 +71,6 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
 
     @Override
     public void saveFrame() {
-
         saveFrame(true, true);
     }
 
@@ -156,9 +156,49 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
 
     @Override
     public void wrongAnswer(String player, String message) {
+
+        if (currentFrame == null)
+            addFrame();
+
         currentFrame.getStatus(player).setClassification(MooshakClassification.WRONG_ANSWER);
         currentFrame.getStatus(player).setObservations(message);
         currentFrame.getStatus(player).setPoints(0);
+    }
+
+    @Override
+    public void failedEvaluation(BuilderException e) {
+
+        if (currentFrame == null)
+            addFrame();
+
+        for (String playerId: movie.getHeader().getPlayers().keySet()) {
+
+            GamePlayerStatus playerStatus = currentFrame.getStatus(playerId);
+            playerStatus.setClassification(MooshakClassification.REQUIRES_REEVALUATION);
+            playerStatus.setObservations(e.getMessage());
+        }
+    }
+
+    @Override
+    public void failedEvaluation(PlayerException e) {
+
+        if (currentFrame == null)
+            addFrame();
+
+        GamePlayerStatus erroneousPlayerStatus = currentFrame.getStatus(e.getPlayerId());
+        erroneousPlayerStatus.setClassification(e.getClassification());
+        erroneousPlayerStatus.setPoints(0);
+        erroneousPlayerStatus.setObservations(e.getMessage());
+
+        for (String playerId: movie.getHeader().getPlayers().keySet()) {
+
+            if (playerId.equals(e.getPlayerId()))
+                continue;
+
+            GamePlayerStatus playerStatus = currentFrame.getStatus(playerId);
+            playerStatus.setClassification(MooshakClassification.REQUIRES_REEVALUATION);
+            playerStatus.setObservations(e.getMessage());
+        }
     }
 
     @Override

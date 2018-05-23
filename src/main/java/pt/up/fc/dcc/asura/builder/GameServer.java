@@ -273,7 +273,7 @@ public class GameServer {
             players.put(playerId, builder.start());
         }
 
-        manager.manage(gameState, players);
+        manager.manage(players);
         manager.exportGameMovie(Files.newOutputStream(
                 FileUtils.getPathResourcesFolder().resolve("movie.json").toAbsolutePath()));
 
