@@ -6,7 +6,10 @@
   				José Paulo Leal
 				zp@dcc.fc.up.pt
 
-   December 2016
+  				José Carlos Paiva
+				josepaiva94@gmail.com
+
+   December 2017
  */
 
 var filename          = "movie.json";    				// name of example movie
@@ -16,7 +19,7 @@ var canvas            = undefined;       				// canvas DOM object
 var context           = undefined;       				// canvas's context
 var background        = undefined;       				// movie background image
 var sprites           = Object();    					// movie sprites
-var spriteCoordinates = undefined;       				// position in sprite of its coordinates
+var anchor_point 	  = undefined;       				// position in sprite of its coordinates
 var waitingFor        = undefined;       				// images still being loaded
 var frames            = undefined;       				// movie frames
 var framesPerSecond   = 1;               				// movie fps

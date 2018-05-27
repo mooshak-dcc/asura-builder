@@ -9,14 +9,17 @@ import pt.up.fc.dcc.asura.builder.languages.Language;
 import pt.up.fc.dcc.asura.builder.utils.FileUtils;
 
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.nio.channels.Channels;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Very simple HTTP server to run your game in a test scenario.
@@ -48,48 +51,56 @@ public class GameServer {
     }
 
     private GameServer(int port) throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Started: accepting requests");
-            while (true)
-                try (Socket socket = serverSocket.accept();
-                     BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                     OutputStream output = socket.getOutputStream()) {
 
-                    String requestTarget = getRequest(input);
-                    LinkedHashMap<String, String> fields = new LinkedHashMap<>();
+        ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 
-                    fields.put("Date", DATE_FORMATTER.format(new Date()));
-                    fields.put("Server", "Asura Builder Previewer");
-                    fields.put("Vary", "accept-language,accept-charset");
+        serverSocketChannel.socket().bind(new InetSocketAddress(port));
 
-                    if (!"/".equals(File.separator))
-                        requestTarget = requestTarget.replace("/", File.separator);
+        while(true){
+            try (SocketChannel socketChannel =
+                    serverSocketChannel.accept();
+                 BufferedReader input = new BufferedReader(new InputStreamReader(Channels.newInputStream(socketChannel)));
+                 OutputStream output = Channels.newOutputStream(socketChannel)) {
 
-                    String extension = getExtension(requestTarget);
+                String requestTarget = getRequest(input);
+                LinkedHashMap<String, String> fields = new LinkedHashMap<>();
 
-                    if (Arrays.asList(IMAGE_EXTENSIONS).contains(extension))
-                        requestTarget = File.separator + IMAGES_DIR + File.separator + requestTarget;
+                fields.put("Date", DATE_FORMATTER.format(new Date()));
+                fields.put("Server", "Asura Builder Previewer");
+                fields.put("Vary", "accept-language,accept-charset");
 
-                    Path source = Paths.get(FileUtils.getPathResourcesFolder().toString(),
-                            requestTarget).toAbsolutePath();
+                if (!"/".equals(File.separator))
+                    requestTarget = requestTarget.replace("/", File.separator);
 
-                    if (Files.isDirectory(source))
-                        source = source.resolve(INDEX_FILE);
+                String extension = getExtension(requestTarget);
 
-                    if (Files.isReadable(source)) {
-                        fields.put("Content-Length", Files.getAttribute(source, "size").toString());
-                        fields.put("Connection", "close");
-                        fields.put("Content-Type", MIMES.get(extension));
+                if (Arrays.asList(IMAGE_EXTENSIONS).contains(extension))
+                    requestTarget = File.separator + IMAGES_DIR + File.separator + requestTarget;
 
-                        sendResponseHeader(output, 200, "Ok", fields);
-                        Files.copy(source, output);
-                    } else {
-                        fields.put("Connection", "close");
-                        fields.put("Content-Type", "text/html; charset=utf-8");
-                        sendResponseHeader(output, 404, "Not Found", fields);
-                        output.write(("<h2>Not found:" + requestTarget + "</h2>\n").getBytes());
-                    }
+                Path source = Paths.get(FileUtils.getPathResourcesFolder().toString(),
+                        requestTarget).toAbsolutePath();
+
+                if (Files.isDirectory(source))
+                    source = source.resolve(INDEX_FILE);
+
+                if (Files.isReadable(source)) {
+                    fields.put("Content-Length", Files.getAttribute(source, "size").toString());
+                    fields.put("Connection", "close");
+                    fields.put("Content-Type", MIMES.get(extension));
+
+                    sendResponseHeader(output, 200, "Ok", fields);
+                    Files.copy(source, output);
+                } else {
+                    fields.put("Connection", "close");
+                    fields.put("Content-Type", "text/html; charset=utf-8");
+                    sendResponseHeader(output, 404, "Not Found", fields);
+                    output.write(("<h2>Not found:" + requestTarget + "</h2>\n").getBytes());
                 }
+            } catch (Exception e) {
+                Logger.getLogger("").severe("Server error: " + e.getMessage());
+            }
+
+
         }
     }
 

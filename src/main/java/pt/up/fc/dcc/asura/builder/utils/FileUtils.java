@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -180,8 +179,6 @@ public class FileUtils {
                             .replaceAll(Pattern.quote(File.separator), "/"))
                             .replaceAll("//", "/");
 
-                    Logger.getLogger("").info(sourceClasspath);
-
                     copyResourceFile(sourceClasspath,
                             rootTargetPath.resolve(file.toString().substring(1)).toFile());
 
@@ -207,8 +204,6 @@ public class FileUtils {
 
         if (!targetFile.exists())
             targetFile.getParentFile().mkdirs();
-
-        Logger.getLogger("").info(sourceClassPath);
 
         try (
                 InputStream in = FileUtils.class.getResourceAsStream(sourceClassPath);
