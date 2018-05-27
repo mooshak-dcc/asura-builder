@@ -174,7 +174,7 @@
                         bullseye pt.up.fc.dcc.asura.builder.bullseye.BullseyeManager es6 solutions/JcpaivaBullseyePlayerES6.js zp js solutions/JcpaivaBullseyePlayer.js jcpaiva
                     </commandlineArgs>-->
                     <commandlineArgs>
-                        tictactoe pt.up.fc.dcc.asura.builder.tictactoe.TicTacToeManager es6 solutions/MyTTTPlayerES6.js jcpaiva java solutions/MyTTTPlayer.java zp
+                        tictactoe pt.up.fc.dcc.asura.builder.tictactoe.TicTacToeManager es6 MyTTTPlayerES6.js jcpaiva java MyTTTPlayer.java zp
                     </commandlineArgs>
                     <systemProperties>
                         <systemProperty>

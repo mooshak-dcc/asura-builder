@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -34,7 +36,9 @@ public class FileUtils {
         List<Path> paths = new ArrayList<>();
 
         PathMatcher pathMatcher = FileSystems.getDefault()
-                .getPathMatcher("glob:" + Paths.get(basePath, glob).toString());
+                .getPathMatcher("glob:" +
+                        (basePath + File.separator + glob)
+                                .replaceAll(Pattern.quote(File.separator), "/"));
 
         try (Stream<Path> stream = Files.walk(Paths.get(basePath))) {
             stream.filter(pathMatcher::matches)
@@ -117,9 +121,11 @@ public class FileUtils {
         }
     }
 
-    public static void copyResourceDirectory(final Path sourcePath, final Path rootTargetPath) throws IOException {
+    public static void copyResourceDirectory(final String sourceClasspath, final Path sourcePath,
+                                             final Path rootTargetPath)
+            throws IOException {
 
-        URL url = FileUtils.class.getClassLoader().getResource(sourcePath.toString());
+        URL url = FileUtils.class.getResource(sourceClasspath);
         File directory = new File(url.getFile());
 
         if (directory.exists()) {
@@ -137,7 +143,10 @@ public class FileUtils {
 
                     Path relativeFilePath = sourcePath.resolve(directory.toPath().relativize(file));
 
-                    copyResourceFile(relativeFilePath, rootTargetPath);
+                    String sourceClasspath = "/" + relativeFilePath.toString()
+                            .replaceAll(Pattern.quote(File.separator), "/");
+
+                    copyResourceFile(sourceClasspath, relativeFilePath, rootTargetPath);
 
                     return FileVisitResult.CONTINUE;
                 }
@@ -164,9 +173,17 @@ public class FileUtils {
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException {
 
-                    copyResourceFile(file, rootTargetPath.resolve(file.toString().substring(1)).toFile());
+                    String sourceClasspath = ("/" + file.toString()
+                            .replaceAll(Pattern.quote(File.separator), "/"))
+                            .replaceAll("//", "/");
+
+                    Logger.getLogger("").info(sourceClasspath);
+
+                    copyResourceFile(sourceClasspath,
+                            rootTargetPath.resolve(file.toString().substring(1)).toFile());
 
                     return FileVisitResult.CONTINUE;
                 }
@@ -177,22 +194,24 @@ public class FileUtils {
 
     }
 
-    public static void copyResourceFile(Path sourcePath, Path targetPath) throws IOException {
+    public static void copyResourceFile(String sourceClassPath, Path sourcePath, Path targetPath)
+            throws IOException {
 
         Path targetFilePath = targetPath.resolve(sourcePath);
 
-        copyResourceFile(sourcePath, targetFilePath.toFile());
+        copyResourceFile(sourceClassPath, targetFilePath.toFile());
     }
 
-    public static void copyResourceFile(Path sourcePath, File targetFile) throws IOException {
+    public static void copyResourceFile(String sourceClassPath, File targetFile)
+            throws IOException {
 
         if (!targetFile.exists())
             targetFile.getParentFile().mkdirs();
 
-        sourcePath = Paths.get("/", sourcePath.toString());
+        Logger.getLogger("").info(sourceClassPath);
 
         try (
-                InputStream in = FileUtils.class.getResourceAsStream(sourcePath.toString());
+                InputStream in = FileUtils.class.getResourceAsStream(sourceClassPath);
                 OutputStream out = new FileOutputStream(targetFile)
         ) {
             byte[] buf = new byte[1024];
@@ -203,12 +222,11 @@ public class FileUtils {
         }
     }
 
-    public static void copyResourceFile(Path sourcePath, OutputStream targetOutputStream) throws IOException {
-
-        sourcePath = Paths.get("/", sourcePath.toString());
+    public static void copyResourceFile(String sourceClassPath, OutputStream targetOutputStream)
+            throws IOException {
 
         try (
-                InputStream in = FileUtils.class.getResourceAsStream(sourcePath.toString());
+                InputStream in = FileUtils.class.getResourceAsStream(sourceClassPath);
         ) {
             byte[] buf = new byte[1024];
             int length;

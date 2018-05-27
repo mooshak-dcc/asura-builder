@@ -262,7 +262,7 @@ public class GameServer {
         Map<String, Process> players = new HashMap<>();
         for (int i = 2; i < args.length; i += 3) {
             String language = args[i];
-            String programPath = Paths.get(gameSlug, args[i + 1]).toString();
+            String programPath = Paths.get(gameSlug, "solutions", args[i + 1]).toString();
             String playerId = args[i + 2];
 
             ProcessBuilder builder = compileAndExecute(gameSlug, language, programPath, playerId);

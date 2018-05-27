@@ -3,10 +3,12 @@ package pt.up.fc.dcc.asura.builder.languages;
 import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
 import pt.up.fc.dcc.asura.builder.utils.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Pattern;
 
 /**
  * Abstract class extended by languages that defines three methods:
@@ -38,26 +40,29 @@ public abstract class Language {
         }
 
         // copy base wrapper files to output folder
+        String baseWrapperSourceClasspath = "/wrappers/" + languageSlug;
         Path baseWrapperRelativePath = Paths.get("wrappers", languageSlug);
 
         try {
-            FileUtils.copyResourceDirectory(baseWrapperRelativePath, outputPath);
+            FileUtils.copyResourceDirectory(baseWrapperSourceClasspath, baseWrapperRelativePath, outputPath);
         } catch (IOException e) {
             throw new BuilderException("Error copying base wrapper files to the output folder.");
         }
 
         // copy wrapper files to output folder
+        String wrapperSourceClasspath = "/" + gameSlug + "/wrappers/" + languageSlug;
         Path wrapperRelativePath = Paths.get(gameSlug, "wrappers", languageSlug);
 
         try {
-            FileUtils.copyResourceDirectory(wrapperRelativePath, outputPath);
+            FileUtils.copyResourceDirectory(wrapperSourceClasspath, wrapperRelativePath, outputPath);
         } catch (IOException e) {
             throw new BuilderException("Error copying wrapper files to the output folder.");
         }
 
         // copy solution to the output folder
         try {
-            FileUtils.copyResourceFile(Paths.get(programPath),
+            FileUtils.copyResourceFile("/" + programPath
+                            .replaceAll(Pattern.quote(File.separator), "/"),
                     outputPath.resolve(Paths.get(programPath).getFileName()).toFile());
         } catch (IOException e) {
             throw new BuilderException("Error copying solution to the output folder.");
