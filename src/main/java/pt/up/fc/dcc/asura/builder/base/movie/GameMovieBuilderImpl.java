@@ -2,10 +2,10 @@ package pt.up.fc.dcc.asura.builder.base.movie;
 
 import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
 import pt.up.fc.dcc.asura.builder.base.exceptions.PlayerException;
-import pt.up.fc.dcc.asura.builder.base.movie.models.GamePlayerStatus;
-import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovie;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovieFrame;
+import pt.up.fc.dcc.asura.builder.base.movie.models.GamePlayerStatus;
+import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.utils.CopyUtils;
 import pt.up.fc.dcc.asura.builder.base.utils.Json;
 
@@ -135,6 +135,17 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
     }
 
     @Override
+    public void addItem(String sprite, int x, int y, int startX, int startY, int width, int height) {
+        currentFrame.addItem(sprite, x, y, null, null, startX, startY, width, height);
+    }
+
+    @Override
+    public void addItem(String sprite, int x, int y, double rotate, double scale,
+                        int startX, int startY, int width, int height) {
+        currentFrame.addItem(sprite, x, y, rotate, scale, startX, startY, width, height);
+    }
+
+    @Override
     public void addMessage(String player, String message) {
         currentFrame.getMessages().put(player, message);
     }
@@ -172,7 +183,7 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
         if (currentFrame == null)
             addFrame();
 
-        for (String playerId: movie.getHeader().getPlayers().keySet()) {
+        for (String playerId : movie.getHeader().getPlayers().keySet()) {
 
             GamePlayerStatus playerStatus = currentFrame.getStatus(playerId);
             playerStatus.setClassification(MooshakClassification.REQUIRES_REEVALUATION);
@@ -191,7 +202,7 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
         erroneousPlayerStatus.setPoints(0);
         erroneousPlayerStatus.setObservations(e.getMessage());
 
-        for (String playerId: movie.getHeader().getPlayers().keySet()) {
+        for (String playerId : movie.getHeader().getPlayers().keySet()) {
 
             if (playerId.equals(e.getPlayerId()))
                 continue;

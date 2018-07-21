@@ -111,6 +111,35 @@ public interface GameMovieBuilder {
     void addItem(String sprite, int x, int y, double rotate, double scale);
 
     /**
+     * Add sprite item to current frame with view window
+     *
+     * @param sprite sprite identifier
+     * @param x      horizontal position
+     * @param y      vertical position
+     * @param startX the x coordinate of the upper-left corner of the view window
+     * @param startY the y coordinate of the upper-left corner of the view window
+     * @param width  the width of the view window
+     * @param height the height of the view window
+     */
+    void addItem(String sprite, int x, int y, int startX, int startY, int width, int height);
+
+    /**
+     * Add sprite item to current frame with rotation and scaling and view window
+     *
+     * @param sprite sprite identifier
+     * @param x      horizontal position
+     * @param y      vertical position
+     * @param rotate rotation of the sprite (default 0)
+     * @param scale  scale to draw object (default is 1)
+     * @param startX the x coordinate of the upper-left corner of the view window
+     * @param startY the y coordinate of the upper-left corner of the view window
+     * @param width  the width of the view window
+     * @param height the height of the view window
+     */
+    void addItem(String sprite, int x, int y, double rotate, double scale,
+                 int startX, int startY, int width, int height);
+
+    /**
      * Add message to the current frame for a given player
      *
      * @param player  player to which the message is sent

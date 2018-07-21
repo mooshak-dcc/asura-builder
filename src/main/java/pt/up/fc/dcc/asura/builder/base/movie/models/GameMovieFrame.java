@@ -58,6 +58,24 @@ public class GameMovieFrame extends JsonObject {
     }
 
     /**
+     * Add item to movie frame
+     *
+     * @param sprite Sprite identifier
+     * @param x      Horizontal position
+     * @param y      Vertical position
+     * @param rotate Rotation of the sprite
+     * @param scale  Scale to draw the sprite
+     * @param startX the x coordinate of the upper-left corner of the view window
+     * @param startY the y coordinate of the upper-left corner of the view window
+     * @param width  the width of the view window
+     * @param height the height of the view window
+     */
+    public void addItem(String sprite, int x, int y, Double rotate, Double scale,
+                        Integer startX, Integer startY, Integer width, Integer height) {
+        items.add(new GameFrameItem(sprite, x, y, rotate, scale, startX, startY, width, height));
+    }
+
+    /**
      * Get the status of a player
      *
      * @param player Player identifier

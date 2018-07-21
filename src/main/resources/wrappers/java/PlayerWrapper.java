@@ -84,7 +84,8 @@ public abstract class PlayerWrapper {
      * {@link StateUpdate}.
      */
     public void readAndUpdate() {
-        StateUpdate stateUpdate = json.objectFromString(in.nextLine(), StateUpdate.class);
+        String line = in.nextLine();
+        StateUpdate stateUpdate = json.objectFromString(line, StateUpdate.class);
         update(stateUpdate);
     }
 
@@ -132,21 +133,32 @@ public abstract class PlayerWrapper {
      *                                      Static helpers                                      *
      ********************************************************************************************/
 
-    public final static void main(String[] args)
-            throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public final static void main(String[] args) {
 
         if (args.length == 2) {
             String playerClassName = args[0];
             String playerId = args[1];
 
-            PlayerWrapper player = initializePlayer(playerClassName);
+            PlayerWrapper player = null;
+            try {
+                player = initializePlayer(playerClassName);
+            } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                System.err.println("Error initializing player class " + playerClassName);
+                System.exit(9);
+            }
+
             player.setPlayerId(playerId);
 
-            player.init();
+            try {
+                player.init();
 
-            player.sendName();
+                player.sendName();
 
-            player.run();
+                player.run();
+            } catch (Exception e) {
+                System.err.println("Error while running player: " + e.getMessage());
+                System.exit(9);
+            }
         } else {
             System.err.println("usage: {player.qualified.ClassName} {player-id}");
         }
