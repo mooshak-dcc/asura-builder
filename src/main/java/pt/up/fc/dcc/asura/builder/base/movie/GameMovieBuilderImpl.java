@@ -135,13 +135,13 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
     }
 
     @Override
-    public void addItem(String sprite, int x, int y, int startX, int startY, int width, int height) {
+    public void addItem(String sprite, int x, int y, Integer startX, Integer startY, Integer width, Integer height) {
         currentFrame.addItem(sprite, x, y, null, null, startX, startY, width, height);
     }
 
     @Override
     public void addItem(String sprite, int x, int y, double rotate, double scale,
-                        int startX, int startY, int width, int height) {
+                        Integer startX, Integer startY, Integer width, Integer height) {
         currentFrame.addItem(sprite, x, y, rotate, scale, startX, startY, width, height);
     }
 

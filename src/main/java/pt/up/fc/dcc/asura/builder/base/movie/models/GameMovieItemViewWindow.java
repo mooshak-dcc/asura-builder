@@ -1,11 +1,13 @@
 package pt.up.fc.dcc.asura.builder.base.movie.models;
 
+import pt.up.fc.dcc.asura.builder.base.utils.JsonObject;
+
 /**
  * View window of a sprite of the game movie
  *
  * @author José Carlos Paiva <code>josepaiva94@gmail.com</code>
  */
-public class GameMovieItemViewWindow {
+public class GameMovieItemViewWindow extends JsonObject {
     private Integer startX;
     private Integer startY;
     private Integer width;

@@ -121,7 +121,7 @@ public interface GameMovieBuilder {
      * @param width  the width of the view window
      * @param height the height of the view window
      */
-    void addItem(String sprite, int x, int y, int startX, int startY, int width, int height);
+    void addItem(String sprite, int x, int y, Integer startX, Integer startY, Integer width, Integer height);
 
     /**
      * Add sprite item to current frame with rotation and scaling and view window
@@ -137,7 +137,7 @@ public interface GameMovieBuilder {
      * @param height the height of the view window
      */
     void addItem(String sprite, int x, int y, double rotate, double scale,
-                 int startX, int startY, int width, int height);
+                 Integer startX, Integer startY, Integer width, Integer height);
 
     /**
      * Add message to the current frame for a given player

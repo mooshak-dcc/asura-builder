@@ -152,6 +152,8 @@ function showFrame(frame) {
 		logger.scrollTop = logger.scrollHeight;
 	}
 
+	var ratio = 1; // here ratio is always the same
+
 	for(var i in frame.items) {
 		var item = frame.items[i];
 		var sprite = sprites[item.sprite];
@@ -163,18 +165,31 @@ function showFrame(frame) {
 		if(sprite === undefined && msg === undefined)
 			throw "unknown sprite with id:"+item.sprite;
 
-		context.save();
-		
-		context.translate(item.x,item.y);
-		if(item.scale !== undefined)
-			context.scale(item.scale,item.scale);
-		if(item.rotate !== undefined)
-			context.rotate(item.rotate);
+        var spriteWidth = sprite.width;
+        var spriteHeight = sprite.height;
+
+        if (item.view_window != null) {
+            spriteWidth = !item.view_window.width ?
+                spriteWidth - item.view_window.start_x : item.view_window.width;
+            spriteHeight = !item.view_window.height ?
+                spriteHeight - item.view_window.start_y : item.view_window.height;
+        }
+
+        var spriteRatio = ratio;
+        if (item.scale)
+            spriteRatio = item.scale * ratio;
+
+        context.save();
+        context.translate(item.x * ratio, item.y * ratio);
+        context.scale(spriteRatio, spriteRatio);
+        if (item.rotate)
+            context.rotate(item.rotate);
+
 		if(sprite)
 		{
 			switch(anchor_point) {
 			case "TOP":
-				relX = -sprite.width/2;
+				relX = -spriteWidth/2;
 				relY = 0;
 				break;
 			case "TOP_LEFT":
@@ -182,37 +197,46 @@ function showFrame(frame) {
 				relY = 0;
 				break;
 			case "TOP_RIGHT":
-				relX = -sprite.width;
+				relX = -spriteWidth;
 				relY = 0;
 				break;
 			case "LEFT":
 				relX = 0;
-				relY = -sprite.height/2;
+				relY = -spriteHeight/2;
 				break;
 			case "RIGHT":
-				relX = -sprite.width;
-				relY = -sprite.height/2;
+				relX = -spriteWidth;
+				relY = -spriteHeight/2;
 				break;
 			case "BOTTOM":
-				relX = -sprite.width/2;
-				relY = -sprite.height;
+				relX = -spriteWidth/2;
+				relY = -spriteHeight;
 				break;
 			case "BOTTOM_LEFT":
 				relX = 0;
-				relY = -sprite.height;
+				relY = -spriteHeight;
 				break;
 			case "BOTTOM_RIGHT":
-				relX = -sprite.width;
-				relY = -sprite.height;
+				relX = -spriteWidth;
+				relY = -spriteHeight;
 				break;
 			case "CENTER":
 			default:
-				relX = -sprite.width/2;
-				relY = -sprite.height/2;
+				relX = -spriteWidth/2;
+				relY = -spriteHeight/2;
 				break;	
 			}
-			
-			context.drawImage(sprite,relX,relY);
+
+			if (!item.view_window)
+				context.drawImage(sprite,relX,relY);
+			else {
+                var startX = item.view_window.start_x;
+                var startY = item.view_window.start_y;
+                context.drawImage(sprite, startX, startY,
+                    spriteWidth, spriteHeight,
+                    relX, relY,
+                    spriteWidth, spriteHeight);
+			}
 		}
 		if(msg)
 		{
