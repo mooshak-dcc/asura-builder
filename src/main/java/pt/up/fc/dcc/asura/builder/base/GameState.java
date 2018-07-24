@@ -13,7 +13,7 @@ import java.util.Map;
  * through the methods.
  * <p>
  * <dl>
- * <dt><code>prepare(GameMovieBuilder,Map&lt;String,String&gt;)</code></dt>
+ * <dt><code>prepare(GameMovieBuilder,String,Map&lt;String,String&gt;)</code></dt>
  * <dd>to initialize the state</dd>
  * <p>
  * <dt><code>execute(GameMovieBuilder,String,PlayerAction)</code></dt>
@@ -42,11 +42,12 @@ public interface GameState {
      * Prepare state before the game starts
      *
      * @param movieBuilder {@link GameMovieBuilder} Game movie builder
+     * @param title        {@link String} title of the movie
      * @param players      {@link Map} Player names indexed by ID
      * @throws BuilderException - If an exception occurs related to the game manager, game state, or in the builder framework
      * @throws PlayerException  - If an exception occurs related to a player behavior
      */
-    void prepare(GameMovieBuilder movieBuilder, Map<String, String> players) throws BuilderException, PlayerException;
+    void prepare(GameMovieBuilder movieBuilder, String title, Map<String, String> players) throws BuilderException, PlayerException;
 
     /**
      * Changes game state according to update issued by a concrete player
