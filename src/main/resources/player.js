@@ -168,7 +168,7 @@ function showFrame(frame) {
         var spriteWidth = sprite.width;
         var spriteHeight = sprite.height;
 
-        if (item.view_window != null) {
+        if (item.view_window) {
             spriteWidth = !item.view_window.width ?
                 spriteWidth - item.view_window.start_x : item.view_window.width;
             spriteHeight = !item.view_window.height ?
