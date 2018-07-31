@@ -14,6 +14,7 @@ import pt.up.fc.dcc.asura.builder.base.utils.Json;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 /**
@@ -204,12 +205,15 @@ public abstract class GameManager {
      * process associated with a player
      */
     public static class Streamer implements Closeable {
+        private Map<String, Process> processes = new HashMap<>();
         private Map<String, BufferedWriter> outs = new HashMap<>();
         private Map<String, BufferedReader> ins = new HashMap<>();
+        private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
         public Streamer(Map<String, Process> processes) {
             for (String player : processes.keySet()) {
                 Process process = processes.get(player);
+                this.processes.put(player, process);
                 outs.put(player, new BufferedWriter(new OutputStreamWriter(process.getOutputStream())));
                 ins.put(player, new BufferedReader(new InputStreamReader(process.getInputStream())));
             }
@@ -266,15 +270,41 @@ public abstract class GameManager {
             return action;
         }
 
+        /**
+         * Read the action from a player with a specific timeout
+         *
+         * @param player ID of the player that is sending updates
+         * @param timeout Timeout for reading actions
+         * @return {@link PlayerAction} action from a player
+         * @throws PlayerException - If there is an error understanding the action
+         */
+        public PlayerAction readActionWithTimeoutFrom(String player, long timeout) throws PlayerException {
+
+            Future<PlayerAction> future = executorService.submit(() -> readActionFrom(player));
+
+            try {
+                return future.get(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException | ExecutionException e) {
+                throw new PlayerException(player, MooshakClassification.RUNTIME_ERROR, e.getMessage(), e);
+            } catch (TimeoutException e) {
+                future.cancel(true);
+                throw new PlayerException(player, MooshakClassification.TIME_LIMIT_EXCEEDED);
+            }
+        }
+
         @Override
         public void close() throws IOException {
             for (String player : ins.keySet()) {
-                ins.get(player).close();
+                processes.get(player).getInputStream().close();
+                //ins.get(player).close();
             }
 
             for (String player : outs.keySet()) {
-                outs.get(player).close();
+                processes.get(player).getOutputStream().close();
+                //outs.get(player).close();
             }
+
+            executorService.shutdownNow();
         }
     }
 
