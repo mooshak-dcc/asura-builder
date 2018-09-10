@@ -7,13 +7,13 @@ import pt.up.fc.dcc.asura.builder.base.utils.JsonObject;
  *
  * @author José Carlos Paiva <code>josepaiva94@gmail.com</code>
  */
-public class GameMovieItemViewWindow extends JsonObject {
+public class GameItemViewWindow extends JsonObject {
     private Integer startX;
     private Integer startY;
     private Integer width;
     private Integer height;
 
-    public GameMovieItemViewWindow(Integer startX, Integer startY, Integer width, Integer height) {
+    public GameItemViewWindow(Integer startX, Integer startY, Integer width, Integer height) {
         this.startX = startX;
         this.startY = startY;
         this.width = width;

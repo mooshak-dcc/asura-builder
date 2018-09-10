@@ -12,7 +12,7 @@ public class GameFrameItem extends JsonObject {
     private int x, y;
     private Double rotate;
     private Double scale;
-    private GameMovieItemViewWindow viewWindow;
+    private GameItemViewWindow viewWindow;
 
     public GameFrameItem(String sprite, int x, int y) {
         this.sprite = sprite;
@@ -35,7 +35,7 @@ public class GameFrameItem extends JsonObject {
         this.y = y;
         this.rotate = rotate;
         this.scale = scale;
-        this.viewWindow = new GameMovieItemViewWindow(startX, startY, width, height);
+        this.viewWindow = new GameItemViewWindow(startX, startY, width, height);
     }
 
     public String getSprite() {
@@ -78,11 +78,11 @@ public class GameFrameItem extends JsonObject {
         this.scale = scale;
     }
 
-    public GameMovieItemViewWindow getViewWindow() {
+    public GameItemViewWindow getViewWindow() {
         return viewWindow;
     }
 
-    public void setViewWindow(GameMovieItemViewWindow viewWindow) {
+    public void setViewWindow(GameItemViewWindow viewWindow) {
         this.viewWindow = viewWindow;
     }
 }
