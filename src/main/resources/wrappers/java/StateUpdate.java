@@ -28,6 +28,26 @@ public class StateUpdate {
         return object;
     }
 
+    public String getObjectAsString() {
+        return String.valueOf(object);
+    }
+
+    public int getObjectAsInt() {
+        return (int) Double.parseDouble(String.valueOf(object));
+    }
+
+    public double getObjectAsDouble() {
+        return Double.parseDouble(String.valueOf(object));
+    }
+
+    public float getObjectAsFloat() {
+        return Float.parseFloat(String.valueOf(object));
+    }
+
+    public boolean getObjectAsBoolean() {
+        return Boolean.parseBoolean(String.valueOf(object));
+    }
+
     public void setObject(Object object) {
         this.object = object;
     }

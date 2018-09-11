@@ -77,7 +77,7 @@ public class Command {
                     String.format("Argument %d of command %s in not defined.", arg, name));
 
         try {
-            return Integer.parseInt(String.valueOf(args[arg]));
+            return (int) Double.parseDouble(String.valueOf(args[arg]));
         } catch (NumberFormatException e) {
             throw new BuilderException(
                     String.format("Argument %d of command %s in not an int.", arg, name));
