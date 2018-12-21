@@ -118,7 +118,7 @@ PlayerWrapper.prototype.doAction = function (name, args) {
  * @param message debugging message
  */
 PlayerWrapper.prototype.log = function (message) {
-    this.action.messages.push(message);
+    this.action.messages.push(JSON.stringify(message));
 };
 
 /**

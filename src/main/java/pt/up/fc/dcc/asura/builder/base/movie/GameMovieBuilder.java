@@ -2,8 +2,8 @@ package pt.up.fc.dcc.asura.builder.base.movie;
 
 import pt.up.fc.dcc.asura.builder.base.exceptions.BuilderException;
 import pt.up.fc.dcc.asura.builder.base.exceptions.PlayerException;
-import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.movie.models.GameMovie;
+import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 
 import java.io.OutputStream;
 import java.util.logging.Logger;
@@ -15,7 +15,10 @@ import java.util.logging.Logger;
  * @author José Carlos Paiva <code>josepaiva94@gmail.com</code>
  */
 public interface GameMovieBuilder {
+
     Logger LOGGER = Logger.getLogger(GameMovieBuilder.class.getSimpleName());
+
+    ;
 
     /**
      * Set the title of the movie
@@ -224,16 +227,41 @@ public interface GameMovieBuilder {
     /**
      * Write JSON game movie data to a stream
      *
-     * @param stream output stream which will receive data
+     * @param stream {@link OutputStream} output stream which will receive data
      */
     void toFile(OutputStream stream);
 
     /**
-     * Build JSON string of the game movie
+     * Write JSON game movie data to a stream using a compression algorithm on
+     * the output.
+     *
+     * @param stream    {@link OutputStream} output stream which will receive data
+     * @param algorithm {@link Compression} algorithm to use in compression
+     */
+    void toFile(OutputStream stream, Compression algorithm);
+
+    /**
+     * Build JSON string of the game movie using a compression algorithm on
+     * the output.
      *
      * @return JSON string of the game movie
      */
     String toString();
+
+    /**
+     * Build JSON string of the game movie
+     *
+     * @param algorithm {@link Compression} algorithm to use in compression
+     * @return JSON string of the game movie
+     */
+    String toString(Compression algorithm);
+
+    /**
+     * Available compression algorithms
+     */
+    enum Compression {
+        NONE, LZW, LZ77
+    }
 
     /**
      * Position of the sprite to which the coordinates are relative

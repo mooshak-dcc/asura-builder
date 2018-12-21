@@ -117,7 +117,7 @@ class PlayerWrapper {
      * @param message debugging message
      */
     log(message) {
-        this.action.messages.push(message);
+        this.action.messages.push(JSON.stringify(message));
     }
 
     /**

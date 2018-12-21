@@ -8,6 +8,8 @@ import pt.up.fc.dcc.asura.builder.base.movie.models.GamePlayerStatus;
 import pt.up.fc.dcc.asura.builder.base.movie.models.MooshakClassification;
 import pt.up.fc.dcc.asura.builder.base.utils.CopyUtils;
 import pt.up.fc.dcc.asura.builder.base.utils.Json;
+import pt.up.fc.dcc.asura.builder.base.utils.compression.LZ77;
+import pt.up.fc.dcc.asura.builder.base.utils.compression.LZW;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -220,8 +222,14 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
 
     @Override
     public void toFile(OutputStream stream) {
+        toFile(stream, Compression.NONE);
+    }
+
+    @Override
+    public void toFile(OutputStream stream, Compression algorithm) {
+
         try {
-            Json.get().writeToStream(movie, stream);
+            stream.write(toString(algorithm).getBytes());
         } catch (IOException e) {
             throw new BuilderException("Error writing movie to stream: " + e.getMessage());
         }
@@ -229,6 +237,23 @@ public class GameMovieBuilderImpl implements GameMovieBuilder {
 
     @Override
     public String toString() {
-        return Json.get().objectToString(movie);
+        return toString(Compression.NONE);
     }
+
+    @Override
+    public String toString(Compression algorithm) {
+
+        String s = Json.get().objectToString(movie);
+
+        switch (algorithm) {
+            case LZW:
+                return new LZW().compress(s);
+            case LZ77:
+                return new LZ77().compress(s);
+            default:
+                return s;
+        }
+    }
+
+
 }
