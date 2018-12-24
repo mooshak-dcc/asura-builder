@@ -5,7 +5,7 @@
     <groupId>pt.up.fc.dcc</groupId>
     <artifactId>asura-builder</artifactId>
     <packaging>jar</packaging>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>Asura Builder</name>
     <description>Asura Builder contains the base to develop game problems for Asura. On the top of
         this project you can build any game you want. Just be sure to maintain the project structure.

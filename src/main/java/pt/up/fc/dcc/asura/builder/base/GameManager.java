@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
+import static pt.up.fc.dcc.asura.builder.base.movie.GameMovieBuilder.Compression;
+
 /**
  * Abstract class common to all game managers, the classes that control the
  * student automated players. Players are passed as a list of processes in the
@@ -146,7 +148,17 @@ public abstract class GameManager {
      * @return String with game movie
      */
     public String getGameMovieString() {
-        return movieBuilder.toString();
+        return getGameMovieString(Compression.NONE.toString());
+    }
+
+    /**
+     * Get movie of the game execution as string
+     *
+     * @param compression {@link String} algorithm to use for compression
+     * @return String with game movie
+     */
+    public String getGameMovieString(String compression) {
+        return movieBuilder.toString(Compression.valueOf(compression));
     }
 
     /**
